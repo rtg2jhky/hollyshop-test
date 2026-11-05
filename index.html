@@ -110,7 +110,9 @@
         .product-card {
             display: flex; gap: 16px; padding: 16px; background: var(--bg-gray);
             border-radius: 16px; margin-bottom: 12px; position: relative;
+            transition: opacity 0.3s;
         }
+        .product-card.dimmed { opacity: 0.4; filter: grayscale(100%); }
         .product-img {
             width: 80px; height: 80px; background: white; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
@@ -118,30 +120,11 @@
         }
         .product-info { flex-grow: 1; padding-right: 28px; }
         
-        /* Новый стиль для шага */
-        .product-step {
-            font-size: 11px;
-            color: var(--brand-pink);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        
+        .product-step { font-size: 11px; color: var(--brand-pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
         .product-brand { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
         .product-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; line-height: 1.2; }
         .product-price { font-size: 16px; font-weight: 700; }
-        
-        /* Новый стиль для описания */
-        .product-reason { 
-            font-size: 12px; 
-            color: #555555; 
-            margin-top: 8px; 
-            line-height: 1.4;
-            background: #FFFFFF;
-            padding: 8px;
-            border-radius: 8px;
-        }
+        .product-reason { font-size: 12px; color: #555555; margin-top: 8px; line-height: 1.4; background: #FFFFFF; padding: 8px; border-radius: 8px; }
         .product-reason b { color: #000; }
         
         .checkbox {
@@ -260,42 +243,45 @@
         { id: 'budget', title: "На какую сумму рассчитываете?", step: "Шаг 5 из 5 · Бюджет", options: ["До 3 000 ₽", "3 000 – 6 000 ₽", "Без ограничений"] }
     ];
 
-    // Обновленная база данных с полем "step" (что для чего) и подробным "reason"
+    // Обновленная база: у каждого товара есть сегмент (budget, mid, premium)
     const productsDB = {
         dry: {
             profile: "Сухая кожа. Цель: глубокое увлажнение и питание.",
             morning: [
-                { step: "1. Умывание", brand: "CeraVe", name: "Hydrating Cleanser", price: 1200, reason: "<b>Утром:</b> Мягко смывает ночные выделения кожи, не разрушая защитный барьер благодаря керамидам.", img: "🧴" },
-                { step: "2. Увлажнение", brand: "Torriden", name: "Dive-In Hyaluronic Acid", price: 1100, reason: "<b>Утром:</b> Насыщает кожу влагой перед нанесением крема, чтобы она не чувствовала стянутости в течение дня.", img: "💧" },
-                { step: "3. Защита", brand: "Round Lab", name: "Birch Juice Sunscreen", price: 1800, reason: "<b>Днем:</b> Защищает от фотостарения. Вместо крема утром, так как имеет плотную, но комфортную текстуру.", img: "☀️" }
+                { segment: "budget", step: "1. Умывание", brand: "CeraVe", name: "Hydrating Cleanser", price: 1200, reason: "<b>Утром:</b> Мягко смывает ночные выделения кожи, не разрушая защитный барьер благодаря керамидам.", img: "🧴" },
+                { segment: "mid", step: "2. Увлажнение", brand: "Torriden", name: "Dive-In Hyaluronic Acid", price: 1100, reason: "<b>Утром:</b> Насыщает кожу влагой перед нанесением крема, чтобы она не чувствовала стянутости в течение дня.", img: "💧" },
+                { segment: "premium", step: "3. Защита", brand: "Round Lab", name: "Birch Juice Sunscreen", price: 1800, reason: "<b>Днем:</b> Защищает от фотостарения. Вместо крема утром, так как имеет плотную, но комфортную текстуру.", img: "☀️" }
             ],
             evening: [
-                { step: "1. Очищение", brand: "Manyo", name: "Pure Cleansing Oil", price: 1100, reason: "<b>Вечером:</b> Растворяет SPF и городскую пыль, подготавливая кожу к нанесению ухода.", img: "🌿" },
-                { step: "2. Питание", brand: "Illiyoon", name: "Ceramide Ato Cream", price: 1500, reason: "<b>На ночь:</b> Восстанавливает липидный барьер во время сна. Наносите плотным слоем как маску.", img: "🌙" }
+                { segment: "premium", step: "1. Очищение", brand: "Manyo", name: "Pure Cleansing Oil", price: 1100, reason: "<b>Вечером:</b> Растворяет SPF и городскую пыль, подготавливая кожу к нанесению ухода.", img: "🌿" },
+                { segment: "budget", step: "2. Питание", brand: "Illiyoon", name: "Ceramide Ato Cream", price: 1500, reason: "<b>На ночь:</b> Восстанавливает липидный барьер во время сна. Наносите плотным слоем как маску.", img: "🌙" },
+                { segment: "mid", step: "3. Восстановление", brand: "La Roche-Posay", name: "Cicaplast Baume B5", price: 2200, reason: "<b>На ночь:</b> Заживляет микроповреждения и убирает шелушения.", img: "🩹" }
             ]
         },
         oily: {
             profile: "Жирная/Комбинированная кожа. Цель: матирование и контроль себума.",
             morning: [
-                { step: "1. Очищение", brand: "COSRX", name: "Salicylic Acid Cleanser", price: 950, reason: "<b>Утром:</b> Салициловая кислота мягко отшелушивает и предотвращает появление новых воспалений.", img: "🧼" },
-                { step: "2. Тонизирование", brand: "Some By Mi", name: "30 Days Miracle Toner", price: 1300, reason: "<b>Утром:</b> Сужает поры и контролирует жирность Т-зоны, подготавливая кожу к макияжу.", img: "💦" },
-                { step: "3. Защита", brand: "Isntree", name: "Watery Sun Gel", price: 1400, reason: "<b>Днем:</b> Легкий гель-СПФ, который не забивает поры и не оставляет жирной пленки.", img: "☀️" }
+                { segment: "budget", step: "1. Очищение", brand: "COSRX", name: "Salicylic Acid Cleanser", price: 950, reason: "<b>Утром:</b> Салициловая кислота мягко отшелушивает и предотвращает появление новых воспалений.", img: "🧼" },
+                { segment: "mid", step: "2. Тонизирование", brand: "Some By Mi", name: "30 Days Miracle Toner", price: 1300, reason: "<b>Утром:</b> Сужает поры и контролирует жирность Т-зоны, подготавливая кожу к макияжу.", img: "💦" },
+                { segment: "premium", step: "3. Защита", brand: "Isntree", name: "Watery Sun Gel", price: 1400, reason: "<b>Днем:</b> Легкий гель-СПФ, который не забивает поры и не оставляет жирной пленки.", img: "☀️" }
             ],
             evening: [
-                { step: "1. Очищение", brand: "COSRX", name: "Low pH Gel Cleanser", price: 800, reason: "<b>Вечером:</b> Смывает остатки дня, нормализует pH кожи после жесткой воды.", img: "🌿" },
-                { step: "2. Матирование", brand: "Medicube", name: "Zero Pore Cream", price: 1700, reason: "<b>На ночь:</b> Работает над сужением пор и успокаивает кожу, снижая выработку себума к утру.", img: "🌙" }
+                { segment: "budget", step: "1. Очищение", brand: "COSRX", name: "Low pH Gel Cleanser", price: 800, reason: "<b>Вечером:</b> Смывает остатки дня, нормализует pH кожи после жесткой воды.", img: "🌿" },
+                { segment: "mid", step: "2. Матирование", brand: "Medicube", name: "Zero Pore Cream", price: 1700, reason: "<b>На ночь:</b> Работает над сужением пор и успокаивает кожу, снижая выработку себума к утру.", img: "🌙" },
+                { segment: "premium", step: "3. Сыворотка", brand: "Paula's Choice", name: "2% BHA Liquid Exfoliant", price: 3200, reason: "<b>Вечером:</b> Мощный эксфолиант для глубокого очищения пор.", img: "🧪" }
             ]
         },
         sensitive: {
             profile: "Чувствительная кожа. Цель: успокоение и защита.",
             morning: [
-                { step: "1. Очищение", brand: "La Roche-Posay", name: "Toleriane Cleanser", price: 1600, reason: "<b>Утром:</b> Гипоаллергенная формула без мыла. Идеально для кожи, склонной к покраснениям.", img: "🧴" },
-                { step: "2. Успокоение", brand: "Anua", name: "Heartleaf 77% Toner", price: 1400, reason: "<b>Утром:</b> Экстракт хвоща мгновенно снимает раздражение и покраснения.", img: "💦" },
-                { step: "3. Защита", brand: "Beauty of Joseon", name: "Relief Sun", price: 1200, reason: "<b>Днем:</b> Комфортный SPF с рисом и пробиотиками. Не щиплет глаза и не вызывает реакций.", img: "☀️" }
+                { segment: "mid", step: "1. Очищение", brand: "La Roche-Posay", name: "Toleriane Cleanser", price: 1600, reason: "<b>Утром:</b> Гипоаллергенная формула без мыла. Идеально для кожи, склонной к покраснениям.", img: "🧴" },
+                { segment: "budget", step: "2. Успокоение", brand: "Anua", name: "Heartleaf 77% Toner", price: 1400, reason: "<b>Утром:</b> Экстракт хвоща мгновенно снимает раздражение и покраснения.", img: "💦" },
+                { segment: "premium", step: "3. Защита", brand: "Beauty of Joseon", name: "Relief Sun", price: 1200, reason: "<b>Днем:</b> Комфортный SPF с рисом и пробиотиками. Не щиплет глаза и не вызывает реакций.", img: "☀️" }
             ],
             evening: [
-                { step: "1. Восстановление", brand: "Skin1004", name: "Centella Ampoule", price: 1100, reason: "<b>Вечером:</b> Концентрат центеллы. Наносите на чистую кожу для заживления микроповреждений.", img: "🌿" },
-                { step: "2. Питание", brand: "Purito", name: "Centella Recovery Cream", price: 1300, reason: "<b>На ночь:</b> Укрепляет сосуды и защищает от внешних раздражителей во время сна.", img: "🌙" }
+                { segment: "budget", step: "1. Восстановление", brand: "Skin1004", name: "Centella Ampoule", price: 1100, reason: "<b>Вечером:</b> Концентрат центеллы. Наносите на чистую кожу для заживления микроповреждений.", img: "🌿" },
+                { segment: "mid", step: "2. Питание", brand: "Purito", name: "Centella Recovery Cream", price: 1300, reason: "<b>На ночь:</b> Укрепляет сосуды и защищает от внешних раздражителей во время сна.", img: "🌙" },
+                { segment: "premium", step: "3. Крем", brand: "Dr. Jart+", name: "Ceramidin Cream", price: 2800, reason: "<b>На ночь:</b> Тяжелая артиллерия для восстановления барьера.", img: "🛡️" }
             ]
         }
     };
@@ -329,7 +315,6 @@
         const q = questions[currentQuestion];
         document.getElementById('question-title').innerText = q.title;
         document.getElementById('step-text').innerText = q.step;
-        
         const progress = ((currentQuestion + 1) / questions.length) * 100;
         document.getElementById('progress-bar').style.width = `${progress}%`;
 
@@ -342,7 +327,6 @@
             const div = document.createElement('div');
             div.className = 'option-card';
             if (userAnswers[q.id] === opt) div.classList.add('selected');
-            
             div.innerText = opt;
             div.onclick = function() {
                 document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
@@ -389,7 +373,7 @@
 
     function showLoaderAndGenerate() {
         goToScreen('screen-loader');
-        const texts = ["Анализируем ваши ответы...", "Подбираем активные компоненты...", "Формируем персональную рутину..."];
+        const texts = ["Анализируем ваши ответы...", "Фильтруем по бюджету...", "Формируем персональную рутину..."];
         let i = 0;
         const interval = setInterval(() => {
             i++;
@@ -403,52 +387,90 @@
         }, 800);
     }
 
+    // --- УМНАЯ ЛОГИКА ПОДБОРА ПО БЮДЖЕТУ ---
     function generateResults() {
         let scenario = 'dry';
-
         const skinAnswer = userAnswers['skin'] || "";
-        if (skinAnswer.includes("Жирная") || skinAnswer.includes("Комбинированная")) {
-            scenario = 'oily';
-        } else if (skinAnswer.includes("Чувствительная")) {
-            scenario = 'sensitive';
+        if (skinAnswer.includes("Жирная") || skinAnswer.includes("Комбинированная")) scenario = 'oily';
+        else if (skinAnswer.includes("Чувствительная")) scenario = 'sensitive';
+
+        const budgetAnswer = userAnswers['budget'] || "Без ограничений";
+        
+        // Собираем все товары для выбранного типа кожи
+        let allProducts = [];
+        productsDB[scenario].morning.forEach(p => allProducts.push({ ...p, isSelected: false }));
+        productsDB[scenario].evening.forEach(p => allProducts.push({ ...p, isSelected: false }));
+
+        // ЛОГИКА ОТБОРА
+        if (budgetAnswer.includes("До 3 000")) {
+            // Берем строго бюджетные товары. Если их нет, берем самые дешевые, чтобы влезть в 3000.
+            let sum = 0;
+            let cheapProducts = allProducts.filter(p => p.segment === 'budget').sort((a, b) => a.price - b.price);
+            
+            // Если бюджетных товаров нет или они дорогие, берем просто самые дешевые из всех
+            if (cheapProducts.length === 0) cheapProducts = [...allProducts].sort((a, b) => a.price - b.price);
+
+            for (let p of cheapProducts) {
+                if (sum + p.price <= 3000) {
+                    sum += p.price;
+                    let original = allProducts.find(x => x.name === p.name);
+                    if (original) original.isSelected = true;
+                }
+            }
+        } 
+        else if (budgetAnswer.includes("3 000 – 6 000")) {
+            // Берем средний сегмент (mid). Если нет, добираем из budget/premium
+            let sum = 0;
+            let midProducts = allProducts.filter(p => p.segment === 'mid' || p.segment === 'budget').sort((a, b) => a.price - b.price);
+            
+            for (let p of midProducts) {
+                if (sum + p.price <= 6000) {
+                    sum += p.price;
+                    let original = allProducts.find(x => x.name === p.name);
+                    if (original) original.isSelected = true;
+                }
+            }
+        } 
+        else {
+            // Без ограничений — берем всё
+            allProducts.forEach(p => p.isSelected = true);
         }
 
-        let profileText = productsDB[scenario].profile;
-        const formatAnswer = userAnswers['format'] || "";
-        if (formatAnswer.includes("Базовый")) profileText += " Формат: только необходимое.";
-        if (formatAnswer.includes("Активные")) profileText += " Формат: с активными компонентами.";
-        if (formatAnswer.includes("Комплексный")) profileText += " Формат: полная многоступенчатая система.";
-
+        // Обновляем профиль
+        let profileText = productsDB[scenario].profile + ` Бюджет: ${budgetAnswer}.`;
         document.getElementById('dynamic-profile').innerHTML = `Ваш профиль: <b>${profileText}</b>`;
 
+        // Рендерим
         const container = document.getElementById('products-container');
         container.innerHTML = '';
-
         currentTotal = 0;
         currentCount = 0;
 
+        // Утро
         container.innerHTML += `<div class="routine-title">☀️ Утро</div>`;
-        productsDB[scenario].morning.forEach(item => {
-            container.innerHTML += createProductCard(item);
-            currentTotal += item.price;
-            currentCount++;
+        productsDB[scenario].morning.forEach((item, index) => {
+            let pData = allProducts.find(x => x.name === item.name);
+            container.innerHTML += createProductCard(item, pData.isSelected);
+            if (pData.isSelected) { currentTotal += item.price; currentCount++; }
         });
 
+        // Вечер
         container.innerHTML += `<div class="routine-title">🌙 Вечер</div>`;
-        productsDB[scenario].evening.forEach(item => {
-            container.innerHTML += createProductCard(item);
-            currentTotal += item.price;
-            currentCount++;
+        productsDB[scenario].evening.forEach((item, index) => {
+            let pData = allProducts.find(x => x.name === item.name);
+            container.innerHTML += createProductCard(item, pData.isSelected);
+            if (pData.isSelected) { currentTotal += item.price; currentCount++; }
         });
 
         updateCartUI();
     }
 
-    // Обновленный шаблон карточки
-    function createProductCard(item) {
+    function createProductCard(item, isSelected) {
+        const checkClass = isSelected ? 'checked' : '';
+        const dimClass = isSelected ? '' : 'dimmed';
         return `
-            <div class="product-card">
-                <div class="checkbox checked" onclick="toggleCheck(this, ${item.price})"></div>
+            <div class="product-card ${dimClass}">
+                <div class="checkbox ${checkClass}" onclick="toggleCheck(this, ${item.price})"></div>
                 <div class="product-img">${item.img}</div>
                 <div class="product-info">
                     <div class="product-step">${item.step}</div>
@@ -463,6 +485,9 @@
 
     function toggleCheck(element, price) {
         element.classList.toggle('checked');
+        const card = element.closest('.product-card');
+        card.classList.toggle('dimmed');
+
         if (element.classList.contains('checked')) {
             currentTotal += price;
             currentCount++;
@@ -488,7 +513,7 @@
     }
 
     function addToCart() {
-        alert("Персональный набор добавлен в корзину! Ваша кожа скажет спасибо.");
+        alert(`Набор на сумму ${currentTotal.toLocaleString('ru-RU')} ₽ добавлен в корзину!`);
         goToScreen('screen-home');
     }
 </script>
