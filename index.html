@@ -42,7 +42,7 @@
         h1 { font-size: 28px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.5px; line-height: 1.2; }
         h2 { font-size: 20px; font-weight: 700; margin: 0 0 16px 0; }
         p { margin: 0 0 16px 0; font-size: 16px; color: var(--text-secondary); line-height: 1.4; }
-        
+
         .btn {
             width: 100%; height: 56px; border-radius: 28px; border: none;
             font-size: 16px; font-weight: 600; cursor: pointer;
@@ -57,11 +57,22 @@
         .padding { padding: 24px; }
 
         .hero-image {
-            width: 100%; height: 40vh; background: linear-gradient(135deg, #E0F2FE 0%, #FCE7F3 100%);
+            width: 100%; height: 40vh; position: relative;
+            border-radius: 0 0 32px 32px; overflow: hidden;
+            background: linear-gradient(135deg, #E0F2FE 0%, #FCE7F3 100%);
             display: flex; align-items: center; justify-content: center;
-            border-radius: 0 0 32px 32px; position: relative;
         }
-        .hero-image::after { content: "✨ Идеальная кожа"; font-size: 24px; font-weight: 800; color: rgba(255,255,255,0.9); }
+        .hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hero-image::after {
+            content: "✨ Идеальная кожа";
+            position: absolute; inset: 0;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 24px;
+            font-size: 24px; font-weight: 800; color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+            background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 55%);
+            pointer-events: none;
+        }
 
         .intro-screen { justify-content: center; padding: 32px; text-align: center; }
         .intro-icon { font-size: 64px; margin-bottom: 24px; }
@@ -74,7 +85,7 @@
         .progress-container { flex-grow: 1; height: 4px; background: var(--bg-gray); border-radius: 2px; overflow: hidden; }
         .progress-bar { height: 100%; width: 20%; background: var(--brand-pink); border-radius: 2px; transition: width 0.3s ease; }
         .step-text { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; display: block; }
-        
+
         .options-list { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
         .option-card {
             padding: 20px; border: 2px solid var(--bg-gray); border-radius: 16px;
@@ -104,43 +115,62 @@
             margin-bottom: 24px; font-size: 14px; line-height: 1.4;
         }
         .profile-badge b { color: var(--brand-pink); }
-        
+
         .routine-title { font-size: 20px; font-weight: 800; margin: 24px 0 16px 0; display: flex; align-items: center; gap: 8px; }
 
+        /* Карточка товара: теперь с фото и счётчиком */
         .product-card {
-            display: flex; gap: 16px; padding: 16px; background: var(--bg-gray);
+            display: flex; gap: 14px; padding: 14px; background: var(--bg-gray);
             border-radius: 16px; margin-bottom: 12px; position: relative;
-            transition: opacity 0.3s;
+            transition: opacity 0.25s, background 0.25s;
+            align-items: flex-start;
         }
-        
-        .product-card.dimmed { opacity: 0.5; filter: grayscale(100%); background: #FAFAFA; border: 1px dashed #D1D1D6; }
-        .product-card.dimmed .checkbox { pointer-events: none; opacity: 0.5; border-style: dashed; }
-        .product-card.dimmed .product-price { text-decoration: line-through; color: #8E8E93; }
-        .budget-lock-text { font-size: 11px; color: #E41C5C; font-weight: 600; margin-top: 4px; display: none; }
-        .product-card.dimmed .budget-lock-text { display: block; }
+        /* Отменённый товар: приглушён, но остаётся кликабельным для возврата */
+        .product-card.inactive { background: #FAFAFA; border: 1px dashed #D1D1D6; }
+        .product-card.inactive .product-img { filter: grayscale(100%); opacity: 0.6; }
+        .product-card.inactive .product-price { text-decoration: line-through; color: #8E8E93; }
+        .product-card.inactive .product-info { opacity: 0.75; }
 
         .product-img {
-            width: 80px; height: 80px; background: white; border-radius: 12px;
+            width: 84px; height: 84px; background: white; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 24px; flex-shrink: 0;
+            flex-shrink: 0; overflow: hidden;
         }
-        .product-info { flex-grow: 1; padding-right: 28px; }
-        
+        .product-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .product-info { flex-grow: 1; min-width: 0; }
         .product-step { font-size: 11px; color: var(--brand-pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
         .product-brand { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
         .product-name { font-size: 14px; font-weight: 600; margin-bottom: 6px; line-height: 1.2; }
         .product-price { font-size: 16px; font-weight: 700; }
         .product-reason { font-size: 12px; color: #555555; margin-top: 8px; line-height: 1.4; background: #FFFFFF; padding: 8px; border-radius: 8px; }
         .product-reason b { color: #000; }
-        
-        .checkbox {
-            position: absolute; top: 16px; right: 16px; width: 24px; height: 24px;
-            border-radius: 50%; border: 2px solid var(--border-color); background: white;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s; z-index: 2;
+        .budget-lock-text { font-size: 11px; color: #E41C5C; font-weight: 600; margin-top: 4px; display: none; }
+        .product-card.locked .budget-lock-text { display: block; }
+        .product-card.locked .qty-control { opacity: 0.45; pointer-events: none; }
+
+        /* Счётчик количества */
+        .qty-control {
+            display: inline-flex; align-items: center; gap: 0;
+            margin-top: 10px; background: #fff; border-radius: 20px;
+            border: 1px solid var(--border-color); overflow: hidden;
         }
-        .checkbox.checked { background: var(--brand-pink); border-color: var(--brand-pink); }
-        .checkbox.checked::after { content: "✓"; color: white; font-size: 14px; font-weight: bold; }
+        .qty-btn {
+            width: 32px; height: 32px; border: none; background: transparent;
+            font-size: 18px; font-weight: 600; cursor: pointer; color: var(--text-main);
+            display: flex; align-items: center; justify-content: center; line-height: 1;
+        }
+        .qty-btn:active { background: var(--bg-gray); }
+        .qty-btn:disabled { color: #C7C7CC; cursor: default; }
+        .qty-value { min-width: 28px; text-align: center; font-size: 14px; font-weight: 700; }
+
+        /* Кнопка возврата для полностью отменённого товара */
+        .restore-btn {
+            margin-top: 10px; padding: 6px 12px; border-radius: 16px;
+            border: 1px solid var(--brand-pink); background: #FFF0F5;
+            color: var(--brand-pink); font-size: 12px; font-weight: 600; cursor: pointer;
+        }
+        .restore-btn:active { opacity: 0.8; }
 
         .tab-bar {
             position: absolute; bottom: 12px; left: 16px; right: 16px; height: 64px;
@@ -158,7 +188,10 @@
 
     <!-- ЭКРАН 1: ГЛАВНАЯ -->
     <div id="screen-home" class="screen active">
-        <div class="hero-image"></div>
+        <div class="hero-image">
+            <img src="hollyshop-store.jpg" alt="Магазин косметики Hollyshop"
+                 onerror="this.style.display='none'; this.parentElement.style.background='linear-gradient(135deg, #E0F2FE 0%, #FCE7F3 100%)';">
+        </div>
         <div class="padding">
             <h1>Эксклюзив Hollyshop</h1>
             <div style="background: var(--bg-gray); padding: 20px; border-radius: 24px; margin-top: 24px; text-align: center;">
@@ -209,7 +242,7 @@
     <div id="screen-result" class="screen">
         <div class="padding">
             <h1 style="margin-top: 16px;">Ваша рутина</h1>
-            
+
             <div class="profile-badge" id="dynamic-profile">
                 Загрузка профиля...
             </div>
@@ -249,53 +282,56 @@
         { id: 'budget', title: "На какую сумму рассчитываете?", step: "Шаг 5 из 5 · Бюджет", options: ["До 3 000 ₽", "3 000 – 6 000 ₽", "Без ограничений"] }
     ];
 
+    // ВАЖНО: поле image — это URL фото товара.
+    // Сейчас стоят плейсхолдеры с названиями брендов, чтобы прототип выглядел живым.
+    // Замени URL на реальные фото с сайта Hollyshop (можно положить файлы в папку images и указать images/xxx.jpg).
     const productsDB = {
         dry: {
             profile: "Сухая кожа. Цель: глубокое увлажнение и питание.",
             morning: [
-                { step: "1. Умывание", brand: "CeraVe", name: "Hydrating Cleanser", price: 1200, reason: "<b>Утром:</b> Мягко смывает ночные выделения кожи, не разрушая защитный барьер благодаря керамидам.", img: "🧴" },
-                { step: "2. Увлажнение", brand: "Torriden", name: "Dive-In Hyaluronic Acid", price: 1100, reason: "<b>Утром:</b> Насыщает кожу влагой перед нанесением крема, чтобы она не чувствовала стянутости в течение дня.", img: "💧" },
-                { step: "3. Защита", brand: "Round Lab", name: "Birch Juice Sunscreen", price: 1800, reason: "<b>Днем:</b> Защищает от фотостарения. Вместо крема утром, так как имеет плотную, но комфортную текстуру.", img: "☀️" }
+                { step: "1. Умывание", brand: "CeraVe", name: "Hydrating Cleanser", price: 1200, reason: "<b>Утром:</b> Мягко смывает ночные выделения кожи, не разрушая защитный барьер благодаря керамидам.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=CeraVe" },
+                { step: "2. Увлажнение", brand: "Torriden", name: "Dive-In Hyaluronic Acid", price: 1100, reason: "<b>Утром:</b> Насыщает кожу влагой перед нанесением крема, чтобы она не чувствовала стянутости в течение дня.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Torriden" },
+                { step: "3. Защита", brand: "Round Lab", name: "Birch Juice Sunscreen", price: 1800, reason: "<b>Днем:</b> Защищает от фотостарения. Вместо крема утром, так как имеет плотную, но комфортную текстуру.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Round+Lab" }
             ],
             evening: [
-                { step: "1. Очищение", brand: "Manyo", name: "Pure Cleansing Oil", price: 1100, reason: "<b>Вечером:</b> Растворяет SPF и городскую пыль, подготавливая кожу к нанесению ухода.", img: "🌿" },
-                { step: "2. Питание", brand: "Illiyoon", name: "Ceramide Ato Cream", price: 1500, reason: "<b>На ночь:</b> Восстанавливает липидный барьер во время сна. Наносите плотным слоем как маску.", img: "🌙" },
-                { step: "3. Восстановление", brand: "La Roche-Posay", name: "Cicaplast Baume B5", price: 2200, reason: "<b>На ночь:</b> Заживляет микроповреждения и убирает шелушения.", img: "🩹" }
+                { step: "1. Очищение", brand: "Manyo", name: "Pure Cleansing Oil", price: 1100, reason: "<b>Вечером:</b> Растворяет SPF и городскую пыль, подготавливая кожу к нанесению ухода.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Manyo" },
+                { step: "2. Питание", brand: "Illiyoon", name: "Ceramide Ato Cream", price: 1500, reason: "<b>На ночь:</b> Восстанавливает липидный барьер во время сна. Наносите плотным слоем как маску.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Illiyoon" },
+                { step: "3. Восстановление", brand: "La Roche-Posay", name: "Cicaplast Baume B5", price: 2200, reason: "<b>На ночь:</b> Заживляет микроповреждения и убирает шелушения.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=LRP" }
             ],
             extra: [
-                { step: "Маска", brand: "Torriden", name: "Dive-In Low Molecule Mask", price: 350, reason: "<b>Доп. уход:</b> Интенсивное увлажнение. Используйте 2-3 раза в неделю вместо сыворотки.", img: "💧" } // Изменена иконка
+                { step: "Маска", brand: "Torriden", name: "Dive-In Low Molecule Mask", price: 350, reason: "<b>Доп. уход:</b> Интенсивное увлажнение. Используйте 2-3 раза в неделю вместо сыворотки.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Torriden" }
             ]
         },
         oily: {
             profile: "Жирная/Комбинированная кожа. Цель: матирование и контроль себума.",
             morning: [
-                { step: "1. Очищение", brand: "COSRX", name: "Salicylic Acid Cleanser", price: 950, reason: "<b>Утром:</b> Салициловая кислота мягко отшелушивает и предотвращает появление новых воспалений.", img: "🧼" },
-                { step: "2. Тонизирование", brand: "Some By Mi", name: "30 Days Miracle Toner", price: 1300, reason: "<b>Утром:</b> Сужает поры и контролирует жирность Т-зоны, подготавливая кожу к макияжу.", img: "💦" },
-                { step: "3. Защита", brand: "Isntree", name: "Watery Sun Gel", price: 1400, reason: "<b>Днем:</b> Легкий гель-СПФ, который не забивает поры и не оставляет жирной пленки.", img: "☀️" }
+                { step: "1. Очищение", brand: "COSRX", name: "Salicylic Acid Cleanser", price: 950, reason: "<b>Утром:</b> Салициловая кислота мягко отшелушивает и предотвращает появление новых воспалений.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=COSRX" },
+                { step: "2. Тонизирование", brand: "Some By Mi", name: "30 Days Miracle Toner", price: 1300, reason: "<b>Утром:</b> Сужает поры и контролирует жирность Т-зоны, подготавливая кожу к макияжу.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Some+By+Mi" },
+                { step: "3. Защита", brand: "Isntree", name: "Watery Sun Gel", price: 1400, reason: "<b>Днем:</b> Легкий гель-СПФ, который не забивает поры и не оставляет жирной пленки.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Isntree" }
             ],
             evening: [
-                { step: "1. Очищение", brand: "COSRX", name: "Low pH Gel Cleanser", price: 800, reason: "<b>Вечером:</b> Смывает остатки дня, нормализует pH кожи после жесткой воды.", img: "🌿" },
-                { step: "2. Матирование", brand: "Medicube", name: "Zero Pore Cream", price: 1700, reason: "<b>На ночь:</b> Работает над сужением пор и успокаивает кожу, снижая выработку себума к утру.", img: "🌙" },
-                { step: "3. Сыворотка", brand: "Paula's Choice", name: "2% BHA Liquid Exfoliant", price: 3200, reason: "<b>Вечером:</b> Мощный эксфолиант для глубокого очищения пор.", img: "🧪" }
+                { step: "1. Очищение", brand: "COSRX", name: "Low pH Gel Cleanser", price: 800, reason: "<b>Вечером:</b> Смывает остатки дня, нормализует pH кожи после жесткой воды.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=COSRX" },
+                { step: "2. Матирование", brand: "Medicube", name: "Zero Pore Cream", price: 1700, reason: "<b>На ночь:</b> Работает над сужением пор и успокаивает кожу, снижая выработку себума к утру.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Medicube" },
+                { step: "3. Сыворотка", brand: "Paula's Choice", name: "2% BHA Liquid Exfoliant", price: 3200, reason: "<b>Вечером:</b> Мощный эксфолиант для глубокого очищения пор.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Paula%27s+Choice" }
             ],
             extra: [
-                { step: "Маска", brand: "COSRX", name: "BHA Blackhead Power Liquid", price: 1800, reason: "<b>Доп. уход:</b> Очищающая маска-пленка для Т-зоны. Применяйте 1-2 раза в неделю.", img: "✨" } // Изменена иконка
+                { step: "Маска", brand: "COSRX", name: "BHA Blackhead Power Liquid", price: 1800, reason: "<b>Доп. уход:</b> Очищающая маска-пленка для Т-зоны. Применяйте 1-2 раза в неделю.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=COSRX" }
             ]
         },
         sensitive: {
             profile: "Чувствительная кожа. Цель: успокоение и защита.",
             morning: [
-                { step: "1. Очищение", brand: "La Roche-Posay", name: "Toleriane Cleanser", price: 1600, reason: "<b>Утром:</b> Гипоаллергенная формула без мыла. Идеально для кожи, склонной к покраснениям.", img: "🧴" },
-                { step: "2. Успокоение", brand: "Anua", name: "Heartleaf 77% Toner", price: 1400, reason: "<b>Утром:</b> Экстракт хвоща мгновенно снимает раздражение и покраснения.", img: "💦" },
-                { step: "3. Защита", brand: "Beauty of Joseon", name: "Relief Sun", price: 1200, reason: "<b>Днем:</b> Комфортный SPF с рисом и пробиотиками. Не щиплет глаза и не вызывает реакций.", img: "☀️" }
+                { step: "1. Очищение", brand: "La Roche-Posay", name: "Toleriane Cleanser", price: 1600, reason: "<b>Утром:</b> Гипоаллергенная формула без мыла. Идеально для кожи, склонной к покраснениям.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=LRP" },
+                { step: "2. Успокоение", brand: "Anua", name: "Heartleaf 77% Toner", price: 1400, reason: "<b>Утром:</b> Экстракт хвоща мгновенно снимает раздражение и покраснения.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Anua" },
+                { step: "3. Защита", brand: "Beauty of Joseon", name: "Relief Sun", price: 1200, reason: "<b>Днем:</b> Комфортный SPF с рисом и пробиотиками. Не щиплет глаза и не вызывает реакций.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Joseon" }
             ],
             evening: [
-                { step: "1. Восстановление", brand: "Skin1004", name: "Centella Ampoule", price: 1100, reason: "<b>Вечером:</b> Концентрат центеллы. Наносите на чистую кожу для заживления микроповреждений.", img: "🌿" },
-                { step: "2. Питание", brand: "Purito", name: "Centella Recovery Cream", price: 1300, reason: "<b>На ночь:</b> Укрепляет сосуды и защищает от внешних раздражителей во время сна.", img: "🌙" },
-                { step: "3. Крем", brand: "Dr. Jart+", name: "Ceramidin Cream", price: 2800, reason: "<b>На ночь:</b> Тяжелая артиллерия для восстановления барьера.", img: "🛡️" }
+                { step: "1. Восстановление", brand: "Skin1004", name: "Centella Ampoule", price: 1100, reason: "<b>Вечером:</b> Концентрат центеллы. Наносите на чистую кожу для заживления микроповреждений.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Skin1004" },
+                { step: "2. Питание", brand: "Purito", name: "Centella Recovery Cream", price: 1300, reason: "<b>На ночь:</b> Укрепляет сосуды и защищает от внешних раздражителей во время сна.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Purito" },
+                { step: "3. Крем", brand: "Dr. Jart+", name: "Ceramidin Cream", price: 2800, reason: "<b>На ночь:</b> Тяжелая артиллерия для восстановления барьера.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Dr.+Jart" }
             ],
             extra: [
-                { step: "Маска", brand: "Skin1004", name: "Madagascar Centella Mask", price: 400, reason: "<b>Доп. уход:</b> Успокаивающая тканевая маска с центеллой. Используйте при покраснениях.", img: "🌿" } // Изменена иконка
+                { step: "Маска", brand: "Skin1004", name: "Madagascar Centella Mask", price: 400, reason: "<b>Доп. уход:</b> Успокаивающая тканевая маска с центеллой. Используйте при покраснениях.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Skin1004" }
             ]
         }
     };
@@ -305,10 +341,10 @@
     let userAnswers = {};
     let currentTotal = 0;
     let currentCount = 0;
-    
-    let budgetLimit = Infinity; 
-    let allRenderedProducts = []; 
-    let showMasks = false; 
+
+    let budgetLimit = Infinity;
+    let allRenderedProducts = [];
+    let showMasks = false;
 
     function goToScreen(screenId) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -429,86 +465,123 @@
         }
 
         allRenderedProducts = [];
-        productsDB[scenario].morning.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'm'+i, isSelected: false }));
-        productsDB[scenario].evening.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'e'+i, isSelected: false }));
-        
+        // quantity: 0 = товар отменён, 1+ = выбран с количеством
+        productsDB[scenario].morning.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'm'+i, quantity: 0, recommended: true }));
+        productsDB[scenario].evening.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'e'+i, quantity: 0, recommended: true }));
+
         if (showMasks) {
-            productsDB[scenario].extra.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'x'+i, isSelected: false }));
+            productsDB[scenario].extra.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'x'+i, quantity: 0, recommended: false }));
         }
 
+        // Автоподбор: сортируем по цене и набираем, пока влезает в бюджет
         let sortedProducts = [...allRenderedProducts].sort((a, b) => a.price - b.price);
-        
-        currentTotal = 0;
-        currentCount = 0;
-
+        let tempTotal = 0;
         for (let p of sortedProducts) {
-            if (currentTotal + p.price <= budgetLimit) {
-                p.isSelected = true;
-                currentTotal += p.price;
-                currentCount++;
+            if (tempTotal + p.price <= budgetLimit) {
+                p.quantity = 1;
+                tempTotal += p.price;
             }
         }
 
         let profileText = productsDB[scenario].profile + ` Бюджет: ${budgetAnswer}.`;
         document.getElementById('dynamic-profile').innerHTML = `Ваш профиль: <b>${profileText}</b>`;
 
+        recalcTotals();
         renderResultUI();
     }
 
-    function createProductCard(item, isSelected) {
-        let checkClass = isSelected ? 'checked' : '';
-        let dimClass = isSelected ? '' : 'dimmed';
-        
-        let isLocked = !isSelected && (currentTotal + item.price > budgetLimit);
-        let lockText = isLocked ? `<div class="budget-lock-text">Не входит в лимит бюджета</div>` : '';
-        let pointerEvents = isLocked ? 'pointer-events: none; opacity: 0.5;' : '';
+    // Пересчёт итогов по quantity всех товаров
+    function recalcTotals() {
+        currentTotal = 0;
+        currentCount = 0;
+        allRenderedProducts.forEach(p => {
+            if (p.quantity > 0) {
+                currentTotal += p.price * p.quantity;
+                currentCount += p.quantity;
+            }
+        });
+    }
 
-        if (isLocked) dimClass = 'dimmed';
+    function createProductCard(item) {
+        const isActive = item.quantity > 0;
+        // Заблокирован, если товар не выбран и добавление одной единицы выведет за бюджет
+        const isLocked = !isActive && (currentTotal + item.price > budgetLimit);
+
+        let cardClass = 'product-card';
+        if (!isActive) cardClass += ' inactive';
+        if (isLocked) cardClass += ' locked';
+
+        // Счётчик: показываем всегда, но если товар отменён — показываем кнопку «Вернуть»
+        let qtyHtml = '';
+        if (isActive) {
+            qtyHtml = `
+                <div class="qty-control">
+                    <button type="button" class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
+                    <span class="qty-value">${item.quantity}</span>
+                    <button type="button" class="qty-btn" onclick="changeQty('${item.id}', 1)" ${isLocked ? 'disabled' : ''}>+</button>
+                </div>
+            `;
+        } else {
+            qtyHtml = `<button type="button" class="restore-btn" onclick="restoreItem('${item.id}')" ${isLocked ? 'disabled style="opacity:0.5;pointer-events:none;"' : ''}>+ Вернуть в набор</button>`;
+        }
+
+        const lockText = isLocked ? `<div class="budget-lock-text">Не входит в лимит бюджета</div>` : '';
 
         return `
-            <div class="product-card ${dimClass}">
-                <div class="checkbox ${checkClass}" style="${pointerEvents}" onclick="toggleCheck('${item.name}', ${item.price}, this)"></div>
-                <div class="product-img">${item.img}</div>
+            <div class="${cardClass}">
+                <div class="product-img">
+                    <img src="${item.image}" alt="${item.name}"
+                         onerror="this.style.display='none'; this.parentElement.innerHTML='🛍️';">
+                </div>
                 <div class="product-info">
                     <div class="product-step">${item.step}</div>
                     <div class="product-brand">${item.brand}</div>
                     <div class="product-name">${item.name}</div>
-                    <div class="product-price">${item.price.toLocaleString('ru-RU')} ₽</div>
+                    <div class="product-price">${item.price.toLocaleString('ru-RU')} ₽${item.quantity > 1 ? ` × ${item.quantity} = ${(item.price * item.quantity).toLocaleString('ru-RU')} ₽` : ''}</div>
                     ${lockText}
+                    ${qtyHtml}
                     <div class="product-reason">${item.reason}</div>
                 </div>
             </div>
         `;
     }
 
-    function toggleCheck(name, price, element) {
-        let product = allRenderedProducts.find(x => x.name === name);
-        
-        if (product.isSelected) {
-            product.isSelected = false;
-            currentTotal -= price;
-            currentCount--;
-            element.classList.remove('checked');
-            element.closest('.product-card').classList.add('dimmed');
-        } else {
-            if (currentTotal + price <= budgetLimit) {
-                product.isSelected = true;
-                currentTotal += price;
-                currentCount++;
-                element.classList.add('checked');
-                element.closest('.product-card').classList.remove('dimmed');
-            } else {
-                alert(`Этот товар не влезает в ваш бюджет. Снимите галочку с другого товара, чтобы освободить место.`);
+    // Изменение количества: -1 (до 0 = отмена), +1 (с проверкой бюджета)
+    function changeQty(id, delta) {
+        const product = allRenderedProducts.find(x => x.id === id);
+        if (!product) return;
+
+        if (delta > 0) {
+            if (currentTotal + product.price > budgetLimit) {
+                alert('Этот товар не влезает в ваш бюджет. Уменьшите количество другого товара или смените бюджет.');
                 return;
             }
+            product.quantity += 1;
+        } else {
+            product.quantity = Math.max(0, product.quantity - 1);
         }
+
+        recalcTotals();
+        renderResultUI();
+    }
+
+    // Возврат полностью отменённого товара
+    function restoreItem(id) {
+        const product = allRenderedProducts.find(x => x.id === id);
+        if (!product) return;
+        if (currentTotal + product.price > budgetLimit) {
+            alert('Этот товар не влезает в ваш бюджет. Уменьшите количество другого товара или смените бюджет.');
+            return;
+        }
+        product.quantity = 1;
+        recalcTotals();
         renderResultUI();
     }
 
     function renderResultUI() {
         const container = document.getElementById('products-container');
         container.innerHTML = '';
-        
+
         let scenario = 'dry';
         const skinAnswer = userAnswers['skin'] || "";
         if (skinAnswer.includes("Жирная") || skinAnswer.includes("Комбинированная")) scenario = 'oily';
@@ -517,20 +590,20 @@
         container.innerHTML += `<div class="routine-title">☀️ Утро</div>`;
         productsDB[scenario].morning.forEach((item) => {
             let pData = allRenderedProducts.find(x => x.name === item.name);
-            container.innerHTML += createProductCard(item, pData.isSelected);
+            container.innerHTML += createProductCard(pData);
         });
 
         container.innerHTML += `<div class="routine-title">🌙 Вечер</div>`;
         productsDB[scenario].evening.forEach((item) => {
             let pData = allRenderedProducts.find(x => x.name === item.name);
-            container.innerHTML += createProductCard(item, pData.isSelected);
+            container.innerHTML += createProductCard(pData);
         });
 
         if (showMasks && productsDB[scenario].extra) {
             container.innerHTML += `<div class="routine-title">✨ Дополнительный уход (2-3 раза в неделю)</div>`;
             productsDB[scenario].extra.forEach((item) => {
                 let pData = allRenderedProducts.find(x => x.name === item.name);
-                container.innerHTML += createProductCard(item, pData.isSelected);
+                container.innerHTML += createProductCard(pData);
             });
         }
 
@@ -540,7 +613,7 @@
     function updateCartUI() {
         document.getElementById('total-price').innerText = currentTotal.toLocaleString('ru-RU') + ' ₽';
         document.getElementById('items-count').innerText = currentCount;
-        
+
         const btn = document.getElementById('add-cart-btn');
         if (currentCount === 0) {
             btn.classList.add('btn-disabled');
@@ -552,7 +625,11 @@
     }
 
     function addToCart() {
-        alert(`Набор на сумму ${currentTotal.toLocaleString('ru-RU')} ₽ добавлен в корзину!`);
+        const lines = allRenderedProducts
+            .filter(p => p.quantity > 0)
+            .map(p => `• ${p.brand} ${p.name} × ${p.quantity} = ${(p.price * p.quantity).toLocaleString('ru-RU')} ₽`)
+            .join('\n');
+        alert(`Набор на сумму ${currentTotal.toLocaleString('ru-RU')} ₽ добавлен в корзину!\n\n${lines}`);
         goToScreen('screen-home');
     }
 </script>
