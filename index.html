@@ -56,6 +56,7 @@
 
         .padding { padding: 24px; }
 
+        /* Фото магазина на главной — без надписи и без затемнения */
         .hero-image {
             width: 100%; height: 40vh; position: relative;
             border-radius: 0 0 32px 32px; overflow: hidden;
@@ -63,19 +64,8 @@
             display: flex; align-items: center; justify-content: center;
         }
         .hero-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .hero-image::after {
-            content: "✨ Идеальная кожа";
-            position: absolute; inset: 0;
-            display: flex; align-items: flex-end; justify-content: center;
-            padding-bottom: 24px;
-            font-size: 24px; font-weight: 800; color: #fff;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
-            background: linear-gradient(to top, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 55%);
-            pointer-events: none;
-        }
 
         .intro-screen { justify-content: center; padding: 32px; text-align: center; }
-        .intro-icon { font-size: 64px; margin-bottom: 24px; }
 
         .header-test {
             padding: 16px 24px; display: flex; align-items: center; gap: 16px;
@@ -118,14 +108,12 @@
 
         .routine-title { font-size: 20px; font-weight: 800; margin: 24px 0 16px 0; display: flex; align-items: center; gap: 8px; }
 
-        /* Карточка товара: теперь с фото и счётчиком */
         .product-card {
             display: flex; gap: 14px; padding: 14px; background: var(--bg-gray);
             border-radius: 16px; margin-bottom: 12px; position: relative;
             transition: opacity 0.25s, background 0.25s;
             align-items: flex-start;
         }
-        /* Отменённый товар: приглушён, но остаётся кликабельным для возврата */
         .product-card.inactive { background: #FAFAFA; border: 1px dashed #D1D1D6; }
         .product-card.inactive .product-img { filter: grayscale(100%); opacity: 0.6; }
         .product-card.inactive .product-price { text-decoration: line-through; color: #8E8E93; }
@@ -149,7 +137,6 @@
         .product-card.locked .budget-lock-text { display: block; }
         .product-card.locked .qty-control { opacity: 0.45; pointer-events: none; }
 
-        /* Счётчик количества */
         .qty-control {
             display: inline-flex; align-items: center; gap: 0;
             margin-top: 10px; background: #fff; border-radius: 20px;
@@ -164,7 +151,6 @@
         .qty-btn:disabled { color: #C7C7CC; cursor: default; }
         .qty-value { min-width: 28px; text-align: center; font-size: 14px; font-weight: 700; }
 
-        /* Кнопка возврата для полностью отменённого товара */
         .restore-btn {
             margin-top: 10px; padding: 6px 12px; border-radius: 16px;
             border: 1px solid var(--brand-pink); background: #FFF0F5;
@@ -202,9 +188,9 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 2: ИНТРО -->
+    <!-- ЭКРАН 2: ИНТРО (без эмодзи ✨) -->
     <div id="screen-intro" class="screen intro-screen">
-        <div class="intro-icon">✨</div>
+        <div style="height: 24px;"></div>
         <h1>Твой идеальный уход</h1>
         <p style="margin-bottom: 32px;">Ответь на 5 вопросов, и мы соберём персональный набор из 9000+ средств Hollyshop.</p>
         <button type="button" class="btn btn-primary" onclick="beginQuestions()">Начать подбор</button>
@@ -282,9 +268,6 @@
         { id: 'budget', title: "На какую сумму рассчитываете?", step: "Шаг 5 из 5 · Бюджет", options: ["До 3 000 ₽", "3 000 – 6 000 ₽", "Без ограничений"] }
     ];
 
-    // ВАЖНО: поле image — это URL фото товара.
-    // Сейчас стоят плейсхолдеры с названиями брендов, чтобы прототип выглядел живым.
-    // Замени URL на реальные фото с сайта Hollyshop (можно положить файлы в папку images и указать images/xxx.jpg).
     const productsDB = {
         dry: {
             profile: "Сухая кожа. Цель: глубокое увлажнение и питание.",
@@ -465,7 +448,6 @@
         }
 
         allRenderedProducts = [];
-        // quantity: 0 = товар отменён, 1+ = выбран с количеством
         productsDB[scenario].morning.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'm'+i, quantity: 0, recommended: true }));
         productsDB[scenario].evening.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'e'+i, quantity: 0, recommended: true }));
 
@@ -473,7 +455,6 @@
             productsDB[scenario].extra.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'x'+i, quantity: 0, recommended: false }));
         }
 
-        // Автоподбор: сортируем по цене и набираем, пока влезает в бюджет
         let sortedProducts = [...allRenderedProducts].sort((a, b) => a.price - b.price);
         let tempTotal = 0;
         for (let p of sortedProducts) {
@@ -490,7 +471,6 @@
         renderResultUI();
     }
 
-    // Пересчёт итогов по quantity всех товаров
     function recalcTotals() {
         currentTotal = 0;
         currentCount = 0;
@@ -504,14 +484,12 @@
 
     function createProductCard(item) {
         const isActive = item.quantity > 0;
-        // Заблокирован, если товар не выбран и добавление одной единицы выведет за бюджет
         const isLocked = !isActive && (currentTotal + item.price > budgetLimit);
 
         let cardClass = 'product-card';
         if (!isActive) cardClass += ' inactive';
         if (isLocked) cardClass += ' locked';
 
-        // Счётчик: показываем всегда, но если товар отменён — показываем кнопку «Вернуть»
         let qtyHtml = '';
         if (isActive) {
             qtyHtml = `
@@ -546,7 +524,6 @@
         `;
     }
 
-    // Изменение количества: -1 (до 0 = отмена), +1 (с проверкой бюджета)
     function changeQty(id, delta) {
         const product = allRenderedProducts.find(x => x.id === id);
         if (!product) return;
@@ -565,7 +542,6 @@
         renderResultUI();
     }
 
-    // Возврат полностью отменённого товара
     function restoreItem(id) {
         const product = allRenderedProducts.find(x => x.id === id);
         if (!product) return;
