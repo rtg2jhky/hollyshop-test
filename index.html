@@ -56,7 +56,6 @@
 
         .padding { padding: 24px; }
 
-        /* Фото магазина на главной — без надписи и без затемнения */
         .hero-image {
             width: 100%; height: 40vh; position: relative;
             border-radius: 0 0 32px 32px; overflow: hidden;
@@ -133,9 +132,6 @@
         .product-price { font-size: 16px; font-weight: 700; }
         .product-reason { font-size: 12px; color: #555555; margin-top: 8px; line-height: 1.4; background: #FFFFFF; padding: 8px; border-radius: 8px; }
         .product-reason b { color: #000; }
-        .budget-lock-text { font-size: 11px; color: #E41C5C; font-weight: 600; margin-top: 4px; display: none; }
-        .product-card.locked .budget-lock-text { display: block; }
-        .product-card.locked .qty-control { opacity: 0.45; pointer-events: none; }
 
         .qty-control {
             display: inline-flex; align-items: center; gap: 0;
@@ -148,7 +144,6 @@
             display: flex; align-items: center; justify-content: center; line-height: 1;
         }
         .qty-btn:active { background: var(--bg-gray); }
-        .qty-btn:disabled { color: #C7C7CC; cursor: default; }
         .qty-value { min-width: 28px; text-align: center; font-size: 14px; font-weight: 700; }
 
         .restore-btn {
@@ -157,6 +152,12 @@
             color: var(--brand-pink); font-size: 12px; font-weight: 600; cursor: pointer;
         }
         .restore-btn:active { opacity: 0.8; }
+
+        .budget-warning {
+            font-size: 11px; color: var(--brand-pink); font-weight: 600;
+            margin-top: 2px; display: none;
+        }
+        .budget-warning.visible { display: block; }
 
         .tab-bar {
             position: absolute; bottom: 12px; left: 16px; right: 16px; height: 64px;
@@ -188,7 +189,7 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 2: ИНТРО (без эмодзи ✨) -->
+    <!-- ЭКРАН 2: ИНТРО -->
     <div id="screen-intro" class="screen intro-screen">
         <div style="height: 24px;"></div>
         <h1>Твой идеальный уход</h1>
@@ -241,6 +242,7 @@
                 <div>
                     <div style="font-size: 12px; color: var(--text-secondary);">Набор из <span id="items-count">0</span> средств</div>
                     <div style="font-size: 20px; font-weight: 800;" id="total-price">0 ₽</div>
+                    <div class="budget-warning" id="budget-warning">Сумма превышает выбранный бюджет — это можно изменить</div>
                 </div>
                 <div style="background: #FFF0F5; color: var(--brand-pink); padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: 600;">Выгода 15%</div>
             </div>
@@ -448,13 +450,14 @@
         }
 
         allRenderedProducts = [];
-        productsDB[scenario].morning.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'm'+i, quantity: 0, recommended: true }));
-        productsDB[scenario].evening.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'e'+i, quantity: 0, recommended: true }));
+        productsDB[scenario].morning.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'm'+i, quantity: 0 }));
+        productsDB[scenario].evening.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'e'+i, quantity: 0 }));
 
         if (showMasks) {
-            productsDB[scenario].extra.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'x'+i, quantity: 0, recommended: false }));
+            productsDB[scenario].extra.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'x'+i, quantity: 0 }));
         }
 
+        // Автоподбор под бюджет: только на старте, дальше всё редактируется свободно
         let sortedProducts = [...allRenderedProducts].sort((a, b) => a.price - b.price);
         let tempTotal = 0;
         for (let p of sortedProducts) {
@@ -484,11 +487,9 @@
 
     function createProductCard(item) {
         const isActive = item.quantity > 0;
-        const isLocked = !isActive && (currentTotal + item.price > budgetLimit);
 
         let cardClass = 'product-card';
         if (!isActive) cardClass += ' inactive';
-        if (isLocked) cardClass += ' locked';
 
         let qtyHtml = '';
         if (isActive) {
@@ -496,14 +497,12 @@
                 <div class="qty-control">
                     <button type="button" class="qty-btn" onclick="changeQty('${item.id}', -1)">−</button>
                     <span class="qty-value">${item.quantity}</span>
-                    <button type="button" class="qty-btn" onclick="changeQty('${item.id}', 1)" ${isLocked ? 'disabled' : ''}>+</button>
+                    <button type="button" class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
                 </div>
             `;
         } else {
-            qtyHtml = `<button type="button" class="restore-btn" onclick="restoreItem('${item.id}')" ${isLocked ? 'disabled style="opacity:0.5;pointer-events:none;"' : ''}>+ Вернуть в набор</button>`;
+            qtyHtml = `<button type="button" class="restore-btn" onclick="restoreItem('${item.id}')">+ Вернуть в набор</button>`;
         }
-
-        const lockText = isLocked ? `<div class="budget-lock-text">Не входит в лимит бюджета</div>` : '';
 
         return `
             <div class="${cardClass}">
@@ -516,7 +515,6 @@
                     <div class="product-brand">${item.brand}</div>
                     <div class="product-name">${item.name}</div>
                     <div class="product-price">${item.price.toLocaleString('ru-RU')} ₽${item.quantity > 1 ? ` × ${item.quantity} = ${(item.price * item.quantity).toLocaleString('ru-RU')} ₽` : ''}</div>
-                    ${lockText}
                     ${qtyHtml}
                     <div class="product-reason">${item.reason}</div>
                 </div>
@@ -524,15 +522,12 @@
         `;
     }
 
+    // Без ограничений по бюджету: можно добавлять и увеличивать свободно
     function changeQty(id, delta) {
         const product = allRenderedProducts.find(x => x.id === id);
         if (!product) return;
 
         if (delta > 0) {
-            if (currentTotal + product.price > budgetLimit) {
-                alert('Этот товар не влезает в ваш бюджет. Уменьшите количество другого товара или смените бюджет.');
-                return;
-            }
             product.quantity += 1;
         } else {
             product.quantity = Math.max(0, product.quantity - 1);
@@ -545,10 +540,6 @@
     function restoreItem(id) {
         const product = allRenderedProducts.find(x => x.id === id);
         if (!product) return;
-        if (currentTotal + product.price > budgetLimit) {
-            alert('Этот товар не влезает в ваш бюджет. Уменьшите количество другого товара или смените бюджет.');
-            return;
-        }
         product.quantity = 1;
         recalcTotals();
         renderResultUI();
@@ -589,6 +580,14 @@
     function updateCartUI() {
         document.getElementById('total-price').innerText = currentTotal.toLocaleString('ru-RU') + ' ₽';
         document.getElementById('items-count').innerText = currentCount;
+
+        // Предупреждение, если сумма вышла за бюджет (не блокирует действия)
+        const warning = document.getElementById('budget-warning');
+        if (budgetLimit !== Infinity && currentTotal > budgetLimit) {
+            warning.classList.add('visible');
+        } else {
+            warning.classList.remove('visible');
+        }
 
         const btn = document.getElementById('add-cart-btn');
         if (currentCount === 0) {
