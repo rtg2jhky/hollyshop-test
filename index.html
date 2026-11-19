@@ -114,16 +114,8 @@
             align-items: flex-start;
         }
         .product-card.inactive { background: #FAFAFA; border: 1px dashed #D1D1D6; }
-        .product-card.inactive .product-img { filter: grayscale(100%); opacity: 0.6; }
         .product-card.inactive .product-price { text-decoration: line-through; color: #8E8E93; }
         .product-card.inactive .product-info { opacity: 0.75; }
-
-        .product-img {
-            width: 84px; height: 84px; background: white; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0; overflow: hidden;
-        }
-        .product-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         .product-info { flex-grow: 1; min-width: 0; }
         .product-step { font-size: 11px; color: var(--brand-pink); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
@@ -173,7 +165,6 @@
 
 <div class="app-container">
 
-    <!-- ЭКРАН 1: ГЛАВНАЯ -->
     <div id="screen-home" class="screen active">
         <div class="hero-image">
             <img src="hollyshop-store.jpg" alt="Магазин косметики Hollyshop"
@@ -189,7 +180,6 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 2: ИНТРО -->
     <div id="screen-intro" class="screen intro-screen">
         <div style="height: 24px;"></div>
         <h1>Твой идеальный уход</h1>
@@ -199,7 +189,6 @@
         <button type="button" class="btn btn-secondary" onclick="goToScreen('screen-home')">Пропустить</button>
     </div>
 
-    <!-- ЭКРАН 3: ВОПРОСЫ -->
     <div id="screen-question" class="screen">
         <div class="header-test">
             <button type="button" class="back-btn" onclick="prevQuestion()">←</button>
@@ -219,13 +208,11 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 4: ЛОУДЕР -->
     <div id="screen-loader" class="screen loader-screen">
         <div class="spinner"></div>
         <h2 id="loader-text">Анализируем ваши ответы...</h2>
     </div>
 
-    <!-- ЭКРАН 5: РЕЗУЛЬТАТ -->
     <div id="screen-result" class="screen">
         <div class="padding">
             <h1 style="margin-top: 16px;">Ваша рутина</h1>
@@ -250,7 +237,6 @@
         </div>
     </div>
 
-    <!-- ТАБ-БАР -->
     <div class="tab-bar" id="main-tabbar">
         <div class="tab-item">☰</div>
         <div class="tab-item">🔍</div>
@@ -270,53 +256,54 @@
         { id: 'budget', title: "На какую сумму рассчитываете?", step: "Шаг 5 из 5 · Бюджет", options: ["До 3 000 ₽", "3 000 – 6 000 ₽", "Без ограничений"] }
     ];
 
+    // Поле image удалено — картинки не используются
     const productsDB = {
         dry: {
             profile: "Сухая кожа. Цель: глубокое увлажнение и питание.",
             morning: [
-                { step: "1. Умывание", brand: "CeraVe", name: "Hydrating Cleanser", price: 1200, reason: "<b>Утром:</b> Мягко смывает ночные выделения кожи, не разрушая защитный барьер благодаря керамидам.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=CeraVe" },
-                { step: "2. Увлажнение", brand: "Torriden", name: "Dive-In Hyaluronic Acid", price: 1100, reason: "<b>Утром:</b> Насыщает кожу влагой перед нанесением крема, чтобы она не чувствовала стянутости в течение дня.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Torriden" },
-                { step: "3. Защита", brand: "Round Lab", name: "Birch Juice Sunscreen", price: 1800, reason: "<b>Днем:</b> Защищает от фотостарения. Вместо крема утром, так как имеет плотную, но комфортную текстуру.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Round+Lab" }
+                { step: "1. Умывание", brand: "CeraVe", name: "Hydrating Cleanser", price: 1200, reason: "<b>Утром:</b> Мягко смывает ночные выделения кожи, не разрушая защитный барьер благодаря керамидам." },
+                { step: "2. Увлажнение", brand: "Torriden", name: "Dive-In Hyaluronic Acid", price: 1100, reason: "<b>Утром:</b> Насыщает кожу влагой перед нанесением крема, чтобы она не чувствовала стянутости в течение дня." },
+                { step: "3. Защита", brand: "Round Lab", name: "Birch Juice Sunscreen", price: 1800, reason: "<b>Днем:</b> Защищает от фотостарения. Вместо крема утром, так как имеет плотную, но комфортную текстуру." }
             ],
             evening: [
-                { step: "1. Очищение", brand: "Manyo", name: "Pure Cleansing Oil", price: 1100, reason: "<b>Вечером:</b> Растворяет SPF и городскую пыль, подготавливая кожу к нанесению ухода.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Manyo" },
-                { step: "2. Питание", brand: "Illiyoon", name: "Ceramide Ato Cream", price: 1500, reason: "<b>На ночь:</b> Восстанавливает липидный барьер во время сна. Наносите плотным слоем как маску.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Illiyoon" },
-                { step: "3. Восстановление", brand: "La Roche-Posay", name: "Cicaplast Baume B5", price: 2200, reason: "<b>На ночь:</b> Заживляет микроповреждения и убирает шелушения.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=LRP" }
+                { step: "1. Очищение", brand: "Manyo", name: "Pure Cleansing Oil", price: 1100, reason: "<b>Вечером:</b> Растворяет SPF и городскую пыль, подготавливая кожу к нанесению ухода." },
+                { step: "2. Питание", brand: "Illiyoon", name: "Ceramide Ato Cream", price: 1500, reason: "<b>На ночь:</b> Восстанавливает липидный барьер во время сна. Наносите плотным слоем как маску." },
+                { step: "3. Восстановление", brand: "La Roche-Posay", name: "Cicaplast Baume B5", price: 2200, reason: "<b>На ночь:</b> Заживляет микроповреждения и убирает шелушения." }
             ],
             extra: [
-                { step: "Маска", brand: "Torriden", name: "Dive-In Low Molecule Mask", price: 350, reason: "<b>Доп. уход:</b> Интенсивное увлажнение. Используйте 2-3 раза в неделю вместо сыворотки.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Torriden" }
+                { step: "Маска", brand: "Torriden", name: "Dive-In Low Molecule Mask", price: 350, reason: "<b>Доп. уход:</b> Интенсивное увлажнение. Используйте 2-3 раза в неделю вместо сыворотки." }
             ]
         },
         oily: {
             profile: "Жирная/Комбинированная кожа. Цель: матирование и контроль себума.",
             morning: [
-                { step: "1. Очищение", brand: "COSRX", name: "Salicylic Acid Cleanser", price: 950, reason: "<b>Утром:</b> Салициловая кислота мягко отшелушивает и предотвращает появление новых воспалений.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=COSRX" },
-                { step: "2. Тонизирование", brand: "Some By Mi", name: "30 Days Miracle Toner", price: 1300, reason: "<b>Утром:</b> Сужает поры и контролирует жирность Т-зоны, подготавливая кожу к макияжу.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Some+By+Mi" },
-                { step: "3. Защита", brand: "Isntree", name: "Watery Sun Gel", price: 1400, reason: "<b>Днем:</b> Легкий гель-СПФ, который не забивает поры и не оставляет жирной пленки.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Isntree" }
+                { step: "1. Очищение", brand: "COSRX", name: "Salicylic Acid Cleanser", price: 950, reason: "<b>Утром:</b> Салициловая кислота мягко отшелушивает и предотвращает появление новых воспалений." },
+                { step: "2. Тонизирование", brand: "Some By Mi", name: "30 Days Miracle Toner", price: 1300, reason: "<b>Утром:</b> Сужает поры и контролирует жирность Т-зоны, подготавливая кожу к макияжу." },
+                { step: "3. Защита", brand: "Isntree", name: "Watery Sun Gel", price: 1400, reason: "<b>Днем:</b> Легкий гель-СПФ, который не забивает поры и не оставляет жирной пленки." }
             ],
             evening: [
-                { step: "1. Очищение", brand: "COSRX", name: "Low pH Gel Cleanser", price: 800, reason: "<b>Вечером:</b> Смывает остатки дня, нормализует pH кожи после жесткой воды.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=COSRX" },
-                { step: "2. Матирование", brand: "Medicube", name: "Zero Pore Cream", price: 1700, reason: "<b>На ночь:</b> Работает над сужением пор и успокаивает кожу, снижая выработку себума к утру.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Medicube" },
-                { step: "3. Сыворотка", brand: "Paula's Choice", name: "2% BHA Liquid Exfoliant", price: 3200, reason: "<b>Вечером:</b> Мощный эксфолиант для глубокого очищения пор.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Paula%27s+Choice" }
+                { step: "1. Очищение", brand: "COSRX", name: "Low pH Gel Cleanser", price: 800, reason: "<b>Вечером:</b> Смывает остатки дня, нормализует pH кожи после жесткой воды." },
+                { step: "2. Матирование", brand: "Medicube", name: "Zero Pore Cream", price: 1700, reason: "<b>На ночь:</b> Работает над сужением пор и успокаивает кожу, снижая выработку себума к утру." },
+                { step: "3. Сыворотка", brand: "Paula's Choice", name: "2% BHA Liquid Exfoliant", price: 3200, reason: "<b>Вечером:</b> Мощный эксфолиант для глубокого очищения пор." }
             ],
             extra: [
-                { step: "Маска", brand: "COSRX", name: "BHA Blackhead Power Liquid", price: 1800, reason: "<b>Доп. уход:</b> Очищающая маска-пленка для Т-зоны. Применяйте 1-2 раза в неделю.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=COSRX" }
+                { step: "Маска", brand: "COSRX", name: "BHA Blackhead Power Liquid", price: 1800, reason: "<b>Доп. уход:</b> Очищающая маска-пленка для Т-зоны. Применяйте 1-2 раза в неделю." }
             ]
         },
         sensitive: {
             profile: "Чувствительная кожа. Цель: успокоение и защита.",
             morning: [
-                { step: "1. Очищение", brand: "La Roche-Posay", name: "Toleriane Cleanser", price: 1600, reason: "<b>Утром:</b> Гипоаллергенная формула без мыла. Идеально для кожи, склонной к покраснениям.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=LRP" },
-                { step: "2. Успокоение", brand: "Anua", name: "Heartleaf 77% Toner", price: 1400, reason: "<b>Утром:</b> Экстракт хвоща мгновенно снимает раздражение и покраснения.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Anua" },
-                { step: "3. Защита", brand: "Beauty of Joseon", name: "Relief Sun", price: 1200, reason: "<b>Днем:</b> Комфортный SPF с рисом и пробиотиками. Не щиплет глаза и не вызывает реакций.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Joseon" }
+                { step: "1. Очищение", brand: "La Roche-Posay", name: "Toleriane Cleanser", price: 1600, reason: "<b>Утром:</b> Гипоаллергенная формула без мыла. Идеально для кожи, склонной к покраснениям." },
+                { step: "2. Успокоение", brand: "Anua", name: "Heartleaf 77% Toner", price: 1400, reason: "<b>Утром:</b> Экстракт хвоща мгновенно снимает раздражение и покраснения." },
+                { step: "3. Защита", brand: "Beauty of Joseon", name: "Relief Sun", price: 1200, reason: "<b>Днем:</b> Комфортный SPF с рисом и пробиотиками. Не щиплет глаза и не вызывает реакций." }
             ],
             evening: [
-                { step: "1. Восстановление", brand: "Skin1004", name: "Centella Ampoule", price: 1100, reason: "<b>Вечером:</b> Концентрат центеллы. Наносите на чистую кожу для заживления микроповреждений.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Skin1004" },
-                { step: "2. Питание", brand: "Purito", name: "Centella Recovery Cream", price: 1300, reason: "<b>На ночь:</b> Укрепляет сосуды и защищает от внешних раздражителей во время сна.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Purito" },
-                { step: "3. Крем", brand: "Dr. Jart+", name: "Ceramidin Cream", price: 2800, reason: "<b>На ночь:</b> Тяжелая артиллерия для восстановления барьера.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Dr.+Jart" }
+                { step: "1. Восстановление", brand: "Skin1004", name: "Centella Ampoule", price: 1100, reason: "<b>Вечером:</b> Концентрат центеллы. Наносите на чистую кожу для заживления микроповреждений." },
+                { step: "2. Питание", brand: "Purito", name: "Centella Recovery Cream", price: 1300, reason: "<b>На ночь:</b> Укрепляет сосуды и защищает от внешних раздражителей во время сна." },
+                { step: "3. Крем", brand: "Dr. Jart+", name: "Ceramidin Cream", price: 2800, reason: "<b>На ночь:</b> Тяжелая артиллерия для восстановления барьера." }
             ],
             extra: [
-                { step: "Маска", brand: "Skin1004", name: "Madagascar Centella Mask", price: 400, reason: "<b>Доп. уход:</b> Успокаивающая тканевая маска с центеллой. Используйте при покраснениях.", image: "https://placehold.co/200x200/F5F5F7/E41C5C?text=Skin1004" }
+                { step: "Маска", brand: "Skin1004", name: "Madagascar Centella Mask", price: 400, reason: "<b>Доп. уход:</b> Успокаивающая тканевая маска с центеллой. Используйте при покраснениях." }
             ]
         }
     };
@@ -457,7 +444,6 @@
             productsDB[scenario].extra.forEach((p, i) => allRenderedProducts.push({ ...p, id: 'x'+i, quantity: 0 }));
         }
 
-        // Автоподбор под бюджет: только на старте, дальше всё редактируется свободно
         let sortedProducts = [...allRenderedProducts].sort((a, b) => a.price - b.price);
         let tempTotal = 0;
         for (let p of sortedProducts) {
@@ -506,10 +492,6 @@
 
         return `
             <div class="${cardClass}">
-                <div class="product-img">
-                    <img src="${item.image}" alt="${item.name}"
-                         onerror="this.style.display='none'; this.parentElement.innerHTML='🛍️';">
-                </div>
                 <div class="product-info">
                     <div class="product-step">${item.step}</div>
                     <div class="product-brand">${item.brand}</div>
@@ -522,7 +504,6 @@
         `;
     }
 
-    // Без ограничений по бюджету: можно добавлять и увеличивать свободно
     function changeQty(id, delta) {
         const product = allRenderedProducts.find(x => x.id === id);
         if (!product) return;
@@ -581,7 +562,6 @@
         document.getElementById('total-price').innerText = currentTotal.toLocaleString('ru-RU') + ' ₽';
         document.getElementById('items-count').innerText = currentCount;
 
-        // Предупреждение, если сумма вышла за бюджет (не блокирует действия)
         const warning = document.getElementById('budget-warning');
         if (budgetLimit !== Infinity && currentTotal > budgetLimit) {
             warning.classList.add('visible');
